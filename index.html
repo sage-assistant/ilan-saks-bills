@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buffalo Bills | Official Announcement — Ilan Saks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bills-blue: #00338D;
+      --bills-red: #C60C30;
+      --bills-white: #FFFFFF;
+      --bg: #0a0e1a;
+      --surface: #0f1424;
+      --surface-2: #141a2e;
+      --border: rgba(255,255,255,0.08);
+      --text: #f0f2f5;
+      --text-dim: #8892a4;
+      --gold: #ffd700;
+      --green: #00c853;
+      --green-soft: rgba(0,200,83,0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* SPLASH / ENTRY SCREEN */
+    .splash {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      transition: opacity 0.6s, visibility 0.6s;
+    }
+    .splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .splash-logo {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    .splash-logo .shield {
+      width: 100%;
+      height: 100%;
+      background: var(--bills-blue);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse-shield 2s ease-in-out infinite;
+    }
+    .splash-logo .shield-inner {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--bills-red);
+      line-height: 1;
+    }
+    @keyframes pulse-shield { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+    .splash-breaking {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.25rem;
+      background: var(--bills-red);
+      border-radius: 4px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: white;
+      margin-bottom: 1.5rem;
+      animation: flash-breaking 1.5s ease-in-out infinite;
+    }
+    @keyframes flash-breaking { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+    .splash h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(1.8rem, 5vw, 3.5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .splash h1 span { color: var(--bills-red); }
+
+    .splash p {
+      font-size: 1rem;
+      color: var(--text-dim);
+      max-width: 550px;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+
+    .enter-btn {
+      padding: 1.25rem 3.5rem;
+      background: var(--bills-red);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .enter-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(198,12,48,0.4); }
+
+    .splash-disclaimer {
+      position: absolute;
+      bottom: 1.5rem;
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      opacity: 0.3;
+    }
+
+    /* TICKER BAR */
+    .ticker-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9998;
+      background: var(--bills-red);
+      color: white;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      overflow: hidden;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .ticker-bar.visible { opacity: 1; }
+
+    .ticker-content {
+      display: flex;
+      white-space: nowrap;
+      animation: ticker-scroll 40s linear infinite;
+    }
+    .ticker-content span { padding: 0 3rem; }
+    @keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    /* LIVE TRACKER */
+    .live-tracker {
+      position: fixed;
+      top: 48px;
+      right: 2rem;
+      z-index: 9997;
+      padding: 1rem 1.5rem;
+      background: var(--surface-2);
+      border: 1px solid var(--bills-blue);
+      border-radius: 12px;
+      opacity: 0;
+      transition: opacity 0.5s;
+      min-width: 200px;
+    }
+    .live-tracker.visible { opacity: 1; }
+    .live-tracker-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--bills-red);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .live-tracker-label::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--bills-red);
+      border-radius: 50%;
+      animation: blink 1s ease-in-out infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+    .live-tracker-value { font-family: 'Oswald', sans-serif; font-size: 1.5rem; font-weight: 600; color: var(--gold); }
+    .live-tracker-sub { font-size: 0.65rem; color: var(--text-dim); margin-top: 0.25rem; }
+
+    /* GRADIENT BG */
+    .gradient-bg {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,51,141,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(198,12,48,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.015;
+      pointer-events: none;
+      z-index: 9990;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 clamp(1.5rem, 5vw, 4rem); position: relative; z-index: 1; }
+    .display { font-family: 'Oswald', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+    .label { font-family: 'Oswald', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--bills-red); }
+
+    /* NAV */
+    .site-nav {
+      position: fixed;
+      top: 32px;
+      left: 0;
+      right: 0;
+      z-index: 9996;
+      background: rgba(10,14,26,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 2px solid var(--bills-blue);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .site-nav.visible { opacity: 1; }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .nav-logo {
+      width: 36px;
+      height: 36px;
+      background: var(--bills-blue);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-logo span { font-family: 'Oswald', sans-serif; font-size: 1rem; font-weight: 700; color: var(--bills-red); }
+    .nav-title { font-family: 'Oswald', sans-serif; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+    .nav-title span { color: var(--bills-red); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--bills-red); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: 25%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,51,141,0.2) 0%, rgba(198,12,48,0.1) 40%, transparent 70%);
+      filter: blur(80px);
+      opacity: 0.4;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1.5rem;
+      background: rgba(198,12,48,0.15);
+      border: 1px solid rgba(198,12,48,0.4);
+      border-radius: 4px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--bills-red);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 1s ease-out 0.1s forwards;
+    }
+
+    .hero-number {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(8rem, 20vw, 16rem);
+      font-weight: 700;
+      color: transparent;
+      -webkit-text-stroke: 2px var(--bills-blue);
+      line-height: 0.9;
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 1s ease-out 0.2s forwards;
+      position: relative;
+    }
+    .hero-number::after {
+      content: '#18';
+      position: absolute;
+      inset: 0;
+      color: var(--bills-blue);
+      -webkit-text-stroke: 0;
+      opacity: 0.08;
+    }
+
+    .hero-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(3rem, 9vw, 7rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      line-height: 0.95;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 1s ease-out 0.4s forwards;
+    }
+    .hero-title .first { color: var(--text); }
+    .hero-title .last { color: var(--bills-red); display: block; }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-weight: 400;
+      color: var(--text-dim);
+      max-width: 700px;
+      line-height: 1.7;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp 1s ease-out 0.6s forwards;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      opacity: 0;
+      animation: fadeUp 1s ease-out 0.8s forwards;
+    }
+    .btn-primary {
+      padding: 1rem 2.5rem;
+      background: var(--bills-red);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(198,12,48,0.3); }
+    .btn-secondary {
+      padding: 1rem 2.5rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-dim);
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-secondary:hover { border-color: var(--bills-blue); color: var(--text); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* SECTIONS */
+    section { padding: clamp(5rem, 12vw, 8rem) 0; }
+    .section-header { text-align: center; max-width: 900px; margin: 0 auto 4rem; }
+    .section-title { font-family: 'Oswald', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.75rem; margin-bottom: 1.5rem; }
+    .section-desc { font-size: 1.05rem; color: var(--text-dim); line-height: 1.8; }
+
+    .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* STATS SECTION */
+    .stats-section { background: var(--surface); border-top: 2px solid var(--bills-blue); border-bottom: 2px solid var(--bills-blue); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      padding: 2rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--bills-blue), var(--bills-red));
+    }
+
+    .stat-value {
+      font-family: 'Oswald', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-dim); font-weight: 600; }
+    .stat-note { font-size: 0.65rem; color: var(--bills-red); margin-top: 0.5rem; font-weight: 500; }
+
+    /* BIO SECTION */
+    .bio-section { background: var(--bg); }
+
+    .bio-timeline {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .bio-timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, var(--bills-blue), var(--bills-red), var(--bills-blue));
+      transform: translateX(-50%);
+    }
+
+    .bio-event {
+      position: relative;
+      padding: 2rem;
+      width: 45%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 2rem;
+    }
+    .bio-event:nth-child(odd) { margin-left: 0; }
+    .bio-event:nth-child(even) { margin-left: 55%; }
+    .bio-event::before {
+      content: '';
+      position: absolute;
+      top: 2rem;
+      width: 12px;
+      height: 12px;
+      background: var(--bills-red);
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+    }
+    .bio-event:nth-child(odd)::before { right: -7%; }
+    .bio-event:nth-child(even)::before { left: -7%; }
+
+    .bio-year {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--bills-red);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .bio-event h4 { font-family: 'Oswald', sans-serif; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .bio-event p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.7; }
+
+    /* COMBINE RESULTS */
+    .combine-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .combine-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .combine-card {
+      padding: 2rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s;
+      cursor: pointer;
+    }
+    .combine-card:hover { transform: translateY(-4px); border-color: var(--bills-blue); }
+
+    .combine-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .combine-metric { font-family: 'Oswald', sans-serif; font-size: 2.5rem; font-weight: 700; color: var(--bills-red); }
+    .combine-name { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-dim); margin-top: 0.5rem; font-weight: 600; }
+    .combine-context { font-size: 0.7rem; color: var(--bills-blue); margin-top: 0.75rem; font-weight: 500; }
+
+    /* SCOUTING REPORT */
+    .scouting-section { background: var(--bg); }
+
+    .scouting-report {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 3rem;
+      background: var(--surface);
+      border: 2px solid var(--bills-blue);
+      border-radius: 16px;
+      position: relative;
+    }
+    .scouting-report::before {
+      content: 'CONFIDENTIAL';
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      color: var(--bills-red);
+      opacity: 0.6;
+    }
+
+    .scouting-header {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .scouting-photo {
+      width: 100px;
+      height: 100px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--bills-blue), var(--bills-red));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Oswald', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+    .scouting-info h3 { font-family: 'Oswald', sans-serif; font-size: 1.8rem; text-transform: uppercase; margin-bottom: 0.25rem; }
+    .scouting-info .position { font-size: 0.8rem; color: var(--bills-red); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+    .scouting-info .details { font-size: 0.8rem; color: var(--text-dim); margin-top: 0.5rem; }
+
+    .scouting-grades {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .grade-item { display: flex; flex-direction: column; gap: 0.5rem; }
+    .grade-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-weight: 600; display: flex; justify-content: space-between; }
+    .grade-label span { color: var(--gold); }
+    .grade-bar { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+    .grade-fill { height: 100%; border-radius: 4px; transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1); width: 0; }
+    .grade-fill.elite { background: linear-gradient(90deg, var(--bills-blue), var(--gold)); }
+    .grade-fill.high { background: linear-gradient(90deg, var(--bills-blue), var(--bills-red)); }
+    .grade-fill.mid { background: var(--bills-blue); }
+
+    .scouting-notes {
+      padding: 1.5rem;
+      background: var(--bg);
+      border-radius: 12px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+      font-style: italic;
+      border-left: 3px solid var(--bills-red);
+    }
+    .scouting-notes strong { color: var(--text); font-style: normal; }
+
+    /* JERSEY BUILDER */
+    .jersey-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .jersey-builder {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .jersey-preview {
+      width: 280px;
+      height: 340px;
+      margin: 0 auto 2rem;
+      background: linear-gradient(180deg, var(--bills-blue) 0%, #001a4d 100%);
+      border-radius: 24px 24px 60px 60px;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      overflow: hidden;
+    }
+    .jersey-stripe {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(180deg, var(--bills-red) 0%, transparent 40%);
+      opacity: 0.3;
+    }
+    .jersey-number-display {
+      position: absolute;
+      top: 35%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Oswald', sans-serif;
+      font-size: 7rem;
+      font-weight: 700;
+      color: white;
+      text-shadow: 3px 3px 0 var(--bills-red), -1px -1px 0 var(--bills-red);
+      transition: all 0.3s;
+    }
+    .jersey-name-display {
+      position: absolute;
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      transition: all 0.3s;
+    }
+    .jersey-collar {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 25px;
+      background: var(--bills-red);
+      border-radius: 0 0 40px 40px;
+    }
+
+    .jersey-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+    }
+    .jersey-controls label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+    .jersey-input {
+      padding: 0.75rem 1.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.1rem;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      width: 250px;
+    }
+    .jersey-input:focus { outline: none; border-color: var(--bills-red); }
+    .jersey-input::placeholder { color: var(--text-dim); opacity: 0.5; }
+
+    .jersey-note { font-size: 0.75rem; color: var(--text-dim); margin-top: 1rem; }
+    .jersey-note span { color: var(--bills-red); font-weight: 600; }
+
+    /* PRESS CONFERENCE */
+    .press-section { background: var(--bg); }
+
+    .press-conference {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .press-qa {
+      padding: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+    .press-qa:hover { border-color: var(--bills-blue); }
+    .press-qa.open .press-answer { display: block; }
+    .press-qa.open .press-toggle { transform: rotate(180deg); }
+
+    .press-question {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .press-reporter {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--bills-red);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .press-question h4 { font-size: 1.05rem; font-weight: 600; line-height: 1.5; }
+    .press-toggle {
+      font-size: 1.2rem;
+      color: var(--text-dim);
+      transition: transform 0.3s;
+      flex-shrink: 0;
+    }
+
+    .press-answer {
+      display: none;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .press-speaker { font-size: 0.65rem; color: var(--bills-blue); font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.5rem; }
+    .press-answer p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.8; }
+
+    /* GAME LOG */
+    .gamelog-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .gamelog-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .gamelog-table th {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 2px solid var(--bills-blue);
+    }
+    .gamelog-table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+    .gamelog-table tr:hover td { background: rgba(0,51,141,0.05); color: var(--text); }
+    .gamelog-result { font-weight: 700; }
+    .gamelog-result.win { color: var(--green); }
+    .gamelog-result.loss { color: var(--bills-red); }
+    .gamelog-highlight { color: var(--gold); font-weight: 600; }
+
+    /* FAN ZONE */
+    .fanzone-section { background: var(--bg); }
+
+    .fanzone-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .fan-tweet {
+      padding: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    .fan-tweet-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .fan-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: white;
+    }
+    .fan-name { font-weight: 600; font-size: 0.9rem; }
+    .fan-handle { font-size: 0.75rem; color: var(--text-dim); }
+    .fan-tweet p { font-size: 0.9rem; line-height: 1.7; }
+    .fan-tweet .fan-stats { margin-top: 1rem; font-size: 0.75rem; color: var(--text-dim); display: flex; gap: 1.5rem; }
+
+    /* SHOP */
+    .shop-section { background: var(--surface); border-top: 1px solid var(--border); }
+
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .shop-item {
+      padding: 2rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s;
+      cursor: pointer;
+    }
+    .shop-item:hover { transform: translateY(-4px); border-color: var(--bills-red); }
+    .shop-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .shop-name { font-family: 'Oswald', sans-serif; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .shop-price { font-family: 'Oswald', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--gold); margin-bottom: 0.5rem; }
+    .shop-status { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    .shop-status.sold-out { color: var(--bills-red); font-weight: 700; }
+    .shop-status.limited { color: var(--gold); }
+
+    /* FOOTER */
+    .site-footer {
+      padding: 4rem 2rem 2rem;
+      background: var(--bg);
+      border-top: 2px solid var(--bills-blue);
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 1rem;
+    }
+    .footer-logo span { color: var(--bills-red); }
+    .footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .footer-links a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em; transition: color 0.3s; }
+    .footer-links a:hover { color: var(--bills-red); }
+    .footer-legal { font-size: 0.6rem; color: var(--text-dim); opacity: 0.4; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .combine-grid { grid-template-columns: 1fr; }
+      .scouting-grades { grid-template-columns: 1fr; }
+      .bio-timeline::before { left: 0; }
+      .bio-event { width: 90%; margin-left: 10% !important; }
+      .bio-event::before { left: -6% !important; right: auto !important; }
+      .fanzone-grid { grid-template-columns: 1fr; }
+      .shop-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
+      .live-tracker { display: none; }
+      .scouting-header { flex-direction: column; text-align: center; }
+      .jersey-preview { width: 220px; height: 270px; }
+      .jersey-number-display { font-size: 5rem; }
+      .jersey-name-display { font-size: 1rem; }
+      .gamelog-table { font-size: 0.7rem; }
+      .gamelog-table th, .gamelog-table td { padding: 0.5rem; }
+    }
+
+    /* KONAMI */
+    .konami-active .hero-title .last { animation: rainbow 2s linear infinite; }
+    @keyframes rainbow { 0% { color: var(--bills-red); } 25% { color: var(--gold); } 50% { color: var(--green); } 75% { color: var(--bills-blue); } 100% { color: var(--bills-red); } }
+
+    /* CONFETTI */
+    .confetti-piece {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      z-index: 99999;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SPLASH -->
+  <div class="splash" id="splash">
+    <div class="splash-logo">
+      <div class="shield"><span class="shield-inner">BUF</span></div>
+    </div>
+    <div class="splash-breaking">BREAKING NEWS</div>
+    <h1>The Buffalo Bills Have Made a <span>Historic Acquisition</span></h1>
+    <p>The franchise is proud to confirm the signing that experts are calling "the most consequential roster move in the history of professional sports." This announcement contains content that may cause extreme excitement.</p>
+    <button class="enter-btn" onclick="enterSite()">VIEW ANNOUNCEMENT</button>
+    <div class="splash-disclaimer">buffalobills.com/saks &bull; This is an official NFL communication. Unauthorized distribution may result in a 15-yard penalty.</div>
+  </div>
+
+  <div class="gradient-bg"></div>
+
+  <!-- TICKER -->
+  <div class="ticker-bar" id="ticker">
+    <div class="ticker-content" id="tickerContent"></div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="site-nav" id="siteNav">
+    <div class="nav-brand">
+      <div class="nav-logo"><span>BUF</span></div>
+      <div class="nav-title">BUFFALO <span>BILLS</span></div>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#stats">Stats</a></li>
+      <li><a href="#scouting">Scouting Report</a></li>
+      <li><a href="#press">Press Conference</a></li>
+      <li><a href="#shop">Pro Shop</a></li>
+    </ul>
+  </nav>
+
+  <!-- LIVE TRACKER -->
+  <div class="live-tracker" id="liveTracker">
+    <div class="live-tracker-label">Live: Jersey Sales</div>
+    <div class="live-tracker-value" id="jerseySales">0</div>
+    <div class="live-tracker-sub">SAKS #18 &mdash; Top Seller in NFL</div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-badge">Official Roster Announcement &bull; Feb 2026</div>
+    <div class="hero-number display">#18</div>
+    <h1 class="hero-title">
+      <span class="first">ILAN</span>
+      <span class="last">SAKS</span>
+    </h1>
+    <p class="hero-subtitle">
+      From the cafés of Montreal to the frozen tundra of Orchard Park. The Bills have found their franchise quarterback, and professional football will never be the same.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('stats').scrollIntoView({behavior:'smooth'})">View Career Stats</button>
+      <button class="btn-secondary" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">Buy Jersey</button>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-section" id="stats">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="label">2025&ndash;2026 Season Stats</div>
+        <h2 class="section-title display">By The Numbers</h2>
+        <p class="section-desc">Statistical dominance previously thought to be mathematically impossible. The NFL's analytics department has reportedly "given up trying to quantify it."</p>
+      </div>
+      <div class="stats-grid reveal">
+        <div class="stat-card">
+          <div class="stat-value" data-count="6847">0</div>
+          <div class="stat-label">Passing Yards</div>
+          <div class="stat-note">NFL Record</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" data-count="67">0</div>
+          <div class="stat-label">Touchdowns</div>
+          <div class="stat-note">NFL Record</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" data-count="158">0</div>
+          <div class="stat-label">Passer Rating</div>
+          <div class="stat-note">Perfect. Literally.</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" data-count="0">0</div>
+          <div class="stat-label">Interceptions</div>
+          <div class="stat-note">Not a typo</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BIO TIMELINE -->
+  <section class="bio-section" id="bio">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="label">Origin Story</div>
+        <h2 class="section-title display">The Road to Greatness</h2>
+        <p class="section-desc">Every legend has a beginning. Most begin on a high school football field. This one began in a Montréal café with a laptop and a very aggressive LinkedIn outreach strategy.</p>
+      </div>
+      <div class="bio-timeline reveal">
+        <div class="bio-event">
+          <div class="bio-year">Niagara Falls, ON</div>
+          <h4>Born Near the Falls</h4>
+          <p>Grew up within earshot of one of the natural wonders of the world. Scientists now believe the constant low-frequency rumble of the falls may have permanently altered his neural pathways, giving him preternatural pocket awareness and an inexplicable tolerance for loud noise (critical for Buffalo home games).</p>
+        </div>
+        <div class="bio-event">
+          <div class="bio-year">McGill University</div>
+          <h4>Bachelor of Commerce</h4>
+          <p>Graduated from McGill with a B.Com. While most future NFL quarterbacks were running drills, Ilan was running discounted cash flow models. His professors noted his "uncanny ability to read defenses," which at the time they assumed was a metaphor for financial statements. It was not.</p>
+        </div>
+        <div class="bio-event">
+          <div class="bio-year">Montreal, 2012</div>
+          <h4>Real Ventures &amp; The VC Years</h4>
+          <p>Worked at Real Ventures, Montreal's premier venture capital firm. Evaluated hundreds of startups. Learned to spot talent, identify winners under pressure, and make split-second decisions worth millions. In retrospect, this was obviously quarterback training disguised as a finance career.</p>
+        </div>
+        <div class="bio-event">
+          <div class="bio-year">McGill, 2013</div>
+          <h4>Founded The Founder Project</h4>
+          <p>Created a student-run VC fund investing in student startups. Covered by BetaKit and BrainStation. Wrote columns about venture capital for national publications. Displayed the leadership, vision, and audacity that would later define his scramble game.</p>
+        </div>
+        <div class="bio-event">
+          <div class="bio-year">Toronto, 2013&ndash;Present</div>
+          <h4>StackedSP &amp; Unstacked Startups</h4>
+          <p>Built StackedSP into one of the most respected tech recruiting firms in Canada, helping clients grow into billion-dollar companies. Also launched the Unstacked Startups podcast. His brother Jared joined after a legendary two-year recruiting effort that Bills GM Brandon Beane called "more impressive than any trade negotiation I've ever seen."</p>
+        </div>
+        <div class="bio-event">
+          <div class="bio-year">February 2026</div>
+          <h4>Signed by the Buffalo Bills</h4>
+          <p>In a move that shocked the sports world, the Bills signed Ilan Saks to a 7-year, $340 million fully guaranteed contract. When asked if Ilan had any prior football experience, GM Beane replied: "He recruited engineers for billion-dollar startups. You think an NFL blitz scares this man?"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NFL COMBINE -->
+  <section class="combine-section" id="combine">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="label">NFL Combine Results</div>
+        <h2 class="section-title display">Physical Assessment</h2>
+        <p class="section-desc">Ilan was not technically invited to the NFL Combine. He showed up anyway. Security was called, but by the time they arrived, he had already posted the fastest 40-yard dash in history. They let him stay.</p>
+      </div>
+      <div class="combine-grid reveal">
+        <div class="combine-card">
+          <div class="combine-icon">&#9201;</div>
+          <div class="combine-metric">3.89s</div>
+          <div class="combine-name">40-Yard Dash</div>
+          <div class="combine-context">Previous record: 4.22s (John Ross)</div>
+        </div>
+        <div class="combine-card">
+          <div class="combine-icon">&#128170;</div>
+          <div class="combine-metric">47</div>
+          <div class="combine-name">Bench Press Reps</div>
+          <div class="combine-context">"He just wouldn't stop" &mdash; Trainer</div>
+        </div>
+        <div class="combine-card">
+          <div class="combine-icon">&#127942;</div>
+          <div class="combine-metric">44.5"</div>
+          <div class="combine-name">Vertical Leap</div>
+          <div class="combine-context">Attributed to years of café-to-café sprinting</div>
+        </div>
+        <div class="combine-card">
+          <div class="combine-icon">&#129504;</div>
+          <div class="combine-metric">50/50</div>
+          <div class="combine-name">Wonderlic Score</div>
+          <div class="combine-context">First perfect score since the test was created</div>
+        </div>
+        <div class="combine-card">
+          <div class="combine-icon">&#128588;</div>
+          <div class="combine-metric">11' 8"</div>
+          <div class="combine-name">Broad Jump</div>
+          <div class="combine-context">Measured twice. Both times: disbelief.</div>
+        </div>
+        <div class="combine-card">
+          <div class="combine-icon">&#128640;</div>
+          <div class="combine-metric">68 mph</div>
+          <div class="combine-name">Throw Velocity</div>
+          <div class="combine-context">Radar gun briefly caught fire</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCOUTING REPORT -->
+  <section class="scouting-section" id="scouting">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="label">Confidential</div>
+        <h2 class="section-title display">Official Scouting Report</h2>
+        <p class="section-desc">The following document was leaked from the Bills front office. Multiple teams attempted to suppress its release. They failed.</p>
+      </div>
+      <div class="scouting-report reveal" id="scoutingReport">
+        <div class="scouting-header">
+          <div class="scouting-photo">IS</div>
+          <div class="scouting-info">
+            <h3>Ilan Saks</h3>
+            <div class="position">Quarterback &bull; #18</div>
+            <div class="details">6'2" &bull; 218 lbs &bull; McGill University &bull; Niagara Falls, ON<br>Prior Experience: Venture Capital, Tech Recruiting, Podcast Host, Ping Pong</div>
+          </div>
+        </div>
+        <div class="scouting-grades">
+          <div class="grade-item">
+            <div class="grade-label">Arm Strength <span>99</span></div>
+            <div class="grade-bar"><div class="grade-fill elite" data-width="99"></div></div>
+          </div>
+          <div class="grade-item">
+            <div class="grade-label">Football IQ <span>99</span></div>
+            <div class="grade-bar"><div class="grade-fill elite" data-width="99"></div></div>
+          </div>
+          <div class="grade-item">
+            <div class="grade-label">Pocket Presence <span>98</span></div>
+            <div class="grade-bar"><div class="grade-fill elite" data-width="98"></div></div>
+          </div>
+          <div class="grade-item">
+            <div class="grade-label">Mobility <span>97</span></div>
+            <div class="grade-bar"><div class="grade-fill elite" data-width="97"></div></div>
+          </div>
+          <div class="grade-item">
+            <div class="grade-label">Leadership <span>100</span></div>
+            <div class="grade-bar"><div class="grade-fill elite" data-width="100"></div></div>
+          </div>
+          <div class="grade-item">
+            <div class="grade-label">Cold Email Conversion <span>94</span></div>
+            <div class="grade-bar"><div class="grade-fill elite" data-width="94"></div></div>
+          </div>
+          <div class="grade-item">
+            <div class="grade-label">Ping Pong <span>96</span></div>
+            <div class="grade-bar"><div class="grade-fill elite" data-width="96"></div></div>
+          </div>
+          <div class="grade-item">
+            <div class="grade-label">Brother Recruitment <span>100</span></div>
+            <div class="grade-bar"><div class="grade-fill elite" data-width="100"></div></div>
+          </div>
+        </div>
+        <div class="scouting-notes">
+          <strong>Scout's Notes:</strong> "In 22 years of professional scouting, I have never seen anything like this. The subject displays elite-level processing speed, likely developed through years of evaluating hundreds of startup pitch decks in high-pressure environments. His ability to read a defense is uncanny, possibly because he spent a decade reading people for a living. Concerns: He keeps calling audibles 'pivots' and refers to the offensive line as his 'Series A.' Minor adjustment period expected. <strong>Overall Grade: GENERATIONAL.</strong>"
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JERSEY BUILDER -->
+  <section class="jersey-section" id="jersey">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="label">Interactive</div>
+        <h2 class="section-title display">Custom Jersey Builder</h2>
+        <p class="section-desc">Personalize your very own Saks jersey. Warning: typing your own name will not make you as talented as Ilan. Nothing will.</p>
+      </div>
+      <div class="jersey-builder reveal">
+        <div class="jersey-preview">
+          <div class="jersey-collar"></div>
+          <div class="jersey-stripe"></div>
+          <div class="jersey-name-display" id="jerseyName">SAKS</div>
+          <div class="jersey-number-display" id="jerseyNumber">18</div>
+        </div>
+        <div class="jersey-controls">
+          <div>
+            <label>Player Name</label><br>
+            <input type="text" class="jersey-input" id="jerseyNameInput" placeholder="SAKS" maxlength="14" value="SAKS">
+          </div>
+          <div>
+            <label>Number</label><br>
+            <input type="text" class="jersey-input" id="jerseyNumberInput" placeholder="18" maxlength="2" value="18" style="width:120px;">
+          </div>
+        </div>
+        <div class="jersey-note">Currently <span id="jerseyWaitlist">847,293</span> fans on the waitlist for this jersey.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRESS CONFERENCE -->
+  <section class="press-section" id="press">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="label">Media Day</div>
+        <h2 class="section-title display">Press Conference</h2>
+        <p class="section-desc">Excerpts from Ilan's introductory press conference at Highmark Stadium. Click to expand each Q&A.</p>
+      </div>
+      <div class="press-conference reveal">
+        <div class="press-qa" onclick="this.classList.toggle('open')">
+          <div class="press-question">
+            <div>
+              <div class="press-reporter">ESPN &mdash; Adam Schefter</div>
+              <h4>Ilan, you have zero years of professional football experience. How do you respond to the skeptics?</h4>
+            </div>
+            <div class="press-toggle">&#9660;</div>
+          </div>
+          <div class="press-answer">
+            <div class="press-speaker">Ilan Saks, QB #18</div>
+            <p>"Adam, I spent a decade convincing software engineers making $400K in San Francisco to take a pay cut and join a Series A startup with twelve employees and a ping pong table. You think a 260-pound defensive end scares me? I've handled harder objections on a Tuesday morning cold call."</p>
+          </div>
+        </div>
+        <div class="press-qa" onclick="this.classList.toggle('open')">
+          <div class="press-question">
+            <div>
+              <div class="press-reporter">NFL Network &mdash; Ian Rapoport</div>
+              <h4>Can you walk us through the moment you decided to leave tech recruiting for professional football?</h4>
+            </div>
+            <div class="press-toggle">&#9660;</div>
+          </div>
+          <div class="press-answer">
+            <div class="press-speaker">Ilan Saks, QB #18</div>
+            <p>"So I was on a podcast recording for Unstacked Startups, interviewing a CTO about AI and talent acquisition. And mid-sentence I just thought: 'I could throw a football 68 miles per hour.' It was like a calling. I hung up, drove to Orchard Park, and threw a spiral through the uprights from the parking lot. The rest, as they say, is history."</p>
+          </div>
+        </div>
+        <div class="press-qa" onclick="this.classList.toggle('open')">
+          <div class="press-question">
+            <div>
+              <div class="press-reporter">The Athletic &mdash; Joe Buscaglia</div>
+              <h4>Your brother Jared reportedly took two years to recruit to StackedSP. Will you be recruiting him as your backup QB?</h4>
+            </div>
+            <div class="press-toggle">&#9660;</div>
+          </div>
+          <div class="press-answer">
+            <div class="press-speaker">Ilan Saks, QB #18</div>
+            <p>"Jared's a natural athlete, absolutely. But two years to close him on a business partnership? I'm not waiting two years for a backup quarterback. I told him: training camp starts Monday. He said he needs to think about it. So yeah, we're on year one of what I expect to be a two-year recruitment cycle."</p>
+          </div>
+        </div>
+        <div class="press-qa" onclick="this.classList.toggle('open')">
+          <div class="press-question">
+            <div>
+              <div class="press-reporter">TSN &mdash; Darren Dreger</div>
+              <h4>You're Canadian. There are rumors you considered the CFL first. Any truth to that?</h4>
+            </div>
+            <div class="press-toggle">&#9660;</div>
+          </div>
+          <div class="press-answer">
+            <div class="press-speaker">Ilan Saks, QB #18</div>
+            <p>"Darren, I love Canada. I grew up in Niagara Falls, went to McGill, built my company in Toronto. But the CFL field is 110 yards and 65 yards wide. That's too much real estate. In recruiting, we say focus your search. I don't need a wider field. I need a deeper roster. Buffalo was the obvious choice: close to home, passionate fanbase, and tables that need to be jumped through."</p>
+          </div>
+        </div>
+        <div class="press-qa" onclick="this.classList.toggle('open')">
+          <div class="press-question">
+            <div>
+              <div class="press-reporter">Buffalo News &mdash; Jay Skurski</div>
+              <h4>How do you plan to connect with the Bills Mafia?</h4>
+            </div>
+            <div class="press-toggle">&#9660;</div>
+          </div>
+          <div class="press-answer">
+            <div class="press-speaker">Ilan Saks, QB #18</div>
+            <p>"I've already started. I went to a tailgate last week, body-slammed a folding table, and then helped three fans update their LinkedIn profiles. One of them got a job offer by halftime. That's what I bring to this franchise: touchdowns AND career development. Bills Mafia isn't just a fanbase. It's a talent pipeline, and I intend to optimize it."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAME LOG -->
+  <section class="gamelog-section" id="gamelog">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="label">2025&ndash;2026 Regular Season</div>
+        <h2 class="section-title display">Game Log</h2>
+        <p class="section-desc">A complete record of Ilan's first NFL season. Every game a masterclass. Every stat line a war crime against the opposing defense.</p>
+      </div>
+      <div style="overflow-x:auto" class="reveal">
+        <table class="gamelog-table">
+          <thead>
+            <tr>
+              <th>Week</th>
+              <th>Opponent</th>
+              <th>Result</th>
+              <th>Comp/Att</th>
+              <th>Yards</th>
+              <th>TD</th>
+              <th>INT</th>
+              <th>Rating</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>@ NYJ</td><td class="gamelog-result win">W 52-3</td><td>31/33</td><td class="gamelog-highlight">487</td><td class="gamelog-highlight">6</td><td>0</td><td>158.3</td></tr>
+            <tr><td>2</td><td>vs MIA</td><td class="gamelog-result win">W 45-7</td><td>28/30</td><td>412</td><td class="gamelog-highlight">5</td><td>0</td><td>158.3</td></tr>
+            <tr><td>3</td><td>@ JAX</td><td class="gamelog-result win">W 56-0</td><td>34/35</td><td class="gamelog-highlight">523</td><td class="gamelog-highlight">7</td><td>0</td><td>158.3</td></tr>
+            <tr><td>4</td><td>vs NE</td><td class="gamelog-result win">W 48-6</td><td>29/32</td><td>401</td><td>4</td><td>0</td><td>155.7</td></tr>
+            <tr><td>5</td><td>@ HOU</td><td class="gamelog-result win">W 41-10</td><td>26/28</td><td>389</td><td>4</td><td>0</td><td>158.3</td></tr>
+            <tr><td>6</td><td>vs TEN</td><td class="gamelog-result win">W 63-0</td><td>36/37</td><td class="gamelog-highlight">571</td><td class="gamelog-highlight">8</td><td>0</td><td>158.3</td></tr>
+            <tr><td>7</td><td>BYE</td><td colspan="6" style="text-align:center;color:var(--text-dim);font-style:italic">Spent bye week placing 14 senior engineers at Shopify</td></tr>
+            <tr><td>8</td><td>@ SEA</td><td class="gamelog-result win">W 44-13</td><td>30/33</td><td>428</td><td>5</td><td>0</td><td>158.3</td></tr>
+            <tr><td>9</td><td>vs DEN</td><td class="gamelog-result win">W 51-3</td><td>33/35</td><td>462</td><td class="gamelog-highlight">6</td><td>0</td><td>158.3</td></tr>
+            <tr><td>10</td><td>@ IND</td><td class="gamelog-result win">W 38-14</td><td>25/29</td><td>367</td><td>3</td><td>0</td><td>147.2</td></tr>
+            <tr><td>11</td><td>vs KC</td><td class="gamelog-result win">W 49-17</td><td>32/34</td><td class="gamelog-highlight">498</td><td class="gamelog-highlight">6</td><td>0</td><td>158.3</td></tr>
+            <tr><td>12</td><td>vs SF</td><td class="gamelog-result win">W 55-7</td><td>35/37</td><td class="gamelog-highlight">512</td><td class="gamelog-highlight">7</td><td>0</td><td>158.3</td></tr>
+            <tr><td>13</td><td>@ DET</td><td class="gamelog-result win">W 42-10</td><td>27/30</td><td>398</td><td>4</td><td>0</td><td>155.1</td></tr>
+            <tr><td>14</td><td>vs NYJ</td><td class="gamelog-result win">W 61-0</td><td>38/39</td><td class="gamelog-highlight">589</td><td class="gamelog-highlight">8</td><td>0</td><td>158.3</td></tr>
+            <tr><td>15</td><td>@ NE</td><td class="gamelog-result win">W 47-3</td><td>30/32</td><td>434</td><td>5</td><td>0</td><td>158.3</td></tr>
+            <tr><td>16</td><td>vs LAR</td><td class="gamelog-result win">W 50-6</td><td>33/36</td><td>456</td><td class="gamelog-highlight">6</td><td>0</td><td>158.3</td></tr>
+            <tr><td>17</td><td>@ MIA</td><td class="gamelog-result win">W 53-0</td><td>35/36</td><td class="gamelog-highlight">520</td><td class="gamelog-highlight">7</td><td>0</td><td>158.3</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAN ZONE -->
+  <section class="fanzone-section" id="fanzone">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="label">Bills Mafia Reacts</div>
+        <h2 class="section-title display">Fan Zone</h2>
+        <p class="section-desc">The internet had some thoughts about Ilan's signing. Here are the best reactions from around the league.</p>
+      </div>
+      <div class="fanzone-grid reveal">
+        <div class="fan-tweet">
+          <div class="fan-tweet-header">
+            <div class="fan-avatar" style="background:var(--bills-blue);">PM</div>
+            <div>
+              <div class="fan-name">Patrick Mahomes</div>
+              <div class="fan-handle">@PatrickMahomes</div>
+            </div>
+          </div>
+          <p>I've seen a lot of quarterbacks in this league. I've never seen one close a candidate while throwing a 60-yard bomb. Ilan Saks is different. I'm genuinely scared. And I don't say that about anyone.</p>
+          <div class="fan-stats"><span>&#10084; 847K</span><span>&#128257; 213K</span><span>&#128065; 42M</span></div>
+        </div>
+        <div class="fan-tweet">
+          <div class="fan-tweet-header">
+            <div class="fan-avatar" style="background:var(--bills-red);">BB</div>
+            <div>
+              <div class="fan-name">Brandon Beane</div>
+              <div class="fan-handle">@BrandonBeane (Bills GM)</div>
+            </div>
+          </div>
+          <p>People ask me why we signed a tech recruiter as our franchise quarterback. I ask them: have you ever tried to hire a Staff Engineer in this market? That requires more arm talent than the NFL. The man is built for this.</p>
+          <div class="fan-stats"><span>&#10084; 234K</span><span>&#128257; 89K</span><span>&#128065; 18M</span></div>
+        </div>
+        <div class="fan-tweet">
+          <div class="fan-tweet-header">
+            <div class="fan-avatar" style="background:#1a1a2e;">JA</div>
+            <div>
+              <div class="fan-name">Jared Saks</div>
+              <div class="fan-handle">@JaredSaks</div>
+            </div>
+          </div>
+          <p>My brother recruited me to his company and it took two years. He recruited himself to the NFL and it took two weeks. I'm starting to think he just didn't try that hard with me.</p>
+          <div class="fan-stats"><span>&#10084; 1.2M</span><span>&#128257; 456K</span><span>&#128065; 67M</span></div>
+        </div>
+        <div class="fan-tweet">
+          <div class="fan-tweet-header">
+            <div class="fan-avatar" style="background:#333;">BM</div>
+            <div>
+              <div class="fan-name">Bills Mafia Table Fund</div>
+              <div class="fan-handle">@BillsMafiaTF</div>
+            </div>
+          </div>
+          <p>ILAN SAKS JUST JUMPED THROUGH A TABLE AT THE TAILGATE, THEN HELPED THE TABLE'S OWNER NEGOTIATE A HIGHER SALARY. THIS MAN IS THE GREATEST THING TO HAPPEN TO BUFFALO SINCE WINGS. WE ARE NOT WORTHY.</p>
+          <div class="fan-stats"><span>&#10084; 2.1M</span><span>&#128257; 890K</span><span>&#128065; 91M</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRO SHOP -->
+  <section class="shop-section" id="shop">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="label">Official Merch</div>
+        <h2 class="section-title display">Saks Pro Shop</h2>
+        <p class="section-desc">All Saks merchandise has sold out in every country on Earth. The following items are on a 6-month backorder. We apologize for the inconvenience. We do not apologize for Ilan being this popular.</p>
+      </div>
+      <div class="shop-grid reveal">
+        <div class="shop-item" onclick="addToCart(this)">
+          <div class="shop-icon">&#127944;</div>
+          <div class="shop-name">Saks #18 Jersey</div>
+          <div class="shop-price">$349.99</div>
+          <div class="shop-status sold-out">SOLD OUT</div>
+        </div>
+        <div class="shop-item" onclick="addToCart(this)">
+          <div class="shop-icon">&#129506;</div>
+          <div class="shop-name">"Saks Appeal" Hoodie</div>
+          <div class="shop-price">$129.99</div>
+          <div class="shop-status sold-out">SOLD OUT</div>
+        </div>
+        <div class="shop-item" onclick="addToCart(this)">
+          <div class="shop-icon">&#127955;</div>
+          <div class="shop-name">Signed Ping Pong Paddle</div>
+          <div class="shop-price">$899.99</div>
+          <div class="shop-status limited">3 REMAINING</div>
+        </div>
+        <div class="shop-item" onclick="addToCart(this)">
+          <div class="shop-icon">&#128218;</div>
+          <div class="shop-name">"From Café to Canton" (Memoir)</div>
+          <div class="shop-price">$27.99</div>
+          <div class="shop-status sold-out">SOLD OUT</div>
+        </div>
+        <div class="shop-item" onclick="addToCart(this)">
+          <div class="shop-icon">&#9749;</div>
+          <div class="shop-name">Saks Montreal Café Mug</div>
+          <div class="shop-price">$44.99</div>
+          <div class="shop-status sold-out">SOLD OUT</div>
+        </div>
+        <div class="shop-item" onclick="addToCart(this)">
+          <div class="shop-icon">&#128241;</div>
+          <div class="shop-name">"Unstacked" Phone Case</div>
+          <div class="shop-price">$39.99</div>
+          <div class="shop-status sold-out">SOLD OUT</div>
+        </div>
+        <div class="shop-item" onclick="addToCart(this)">
+          <div class="shop-icon">&#127871;</div>
+          <div class="shop-name">Saks Buffalo Wing Sauce</div>
+          <div class="shop-price">$18.99</div>
+          <div class="shop-status limited">12 REMAINING</div>
+        </div>
+        <div class="shop-item" onclick="addToCart(this)">
+          <div class="shop-icon">&#128588;</div>
+          <div class="shop-name">Table-Smashing Kit</div>
+          <div class="shop-price">$74.99</div>
+          <div class="shop-status sold-out">SOLD OUT</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-logo">BUFFALO <span>BILLS</span></div>
+    <div class="footer-links">
+      <a href="#">Tickets</a>
+      <a href="#">Schedule</a>
+      <a href="#">Roster</a>
+      <a href="#">Saks Facts</a>
+      <a href="#">Ping Pong Stats</a>
+      <a href="#">Table Smash Cam</a>
+    </div>
+    <p class="footer-legal">
+      &copy; 2026 Buffalo Bills. One Bills Drive, Orchard Park, NY 14127. This is a 100% legitimate NFL franchise website and not at all a satirical tribute to a Canadian tech recruiter who, as far as we know, has never thrown a football professionally. All stats are real in at least one parallel universe. "Saks Appeal" is a registered trademark. Bills Mafia approved. Ilan, if you're reading this: you're a legend, and the table never stood a chance.
+    </p>
+  </footer>
+
+  <script>
+    // ENTER SITE
+    function enterSite() {
+      document.getElementById('splash').classList.add('hidden');
+      document.getElementById('ticker').classList.add('visible');
+      document.getElementById('siteNav').classList.add('visible');
+      document.getElementById('liveTracker').classList.add('visible');
+      startJerseySales();
+      startCounters();
+    }
+
+    // TICKER
+    const tickerItems = [
+      'BREAKING: Ilan Saks named NFL MVP, Rookie of the Year, and "Most Likely to Also Fix Your Hiring Pipeline" in same ceremony',
+      'SAKS WATCH: Jersey sales surpass combined total of every other NFL player',
+      'REPORT: Niagara Falls renamed "Saks Falls" in honor of native son',
+      'UPDATE: McGill University renames Commerce program "The Saks School of Football and Business"',
+      'INJURY REPORT: Ilan Saks — Questionable (too much talent, doctors concerned)',
+      'RUMOR: Ilan Saks turned down $500M offer from Dallas, says "I\'d never leave Buffalo. The wings are too good."',
+      'STAT: Saks has more touchdowns this season than the Jets have had in the last decade. Combined.',
+      'ALERT: Ilan\'s brother Jared STILL hasn\'t committed to backup QB role. Recruitment entering year 1.',
+      'FUN FACT: Ilan placed 3 engineers at FAANG companies during halftime of Week 6',
+      'JUST IN: Canton Ohio already building Ilan Saks wing at Pro Football Hall of Fame',
+      'TRENDING: #SaksAppeal is the most-used hashtag in NFL history',
+    ];
+    const ticker = document.getElementById('tickerContent');
+    let tickerHTML = '';
+    for (let i = 0; i < 3; i++) tickerItems.forEach(t => tickerHTML += `<span>${t}</span>`);
+    ticker.innerHTML = tickerHTML;
+
+    // JERSEY SALES COUNTER
+    let salesCount = 847293;
+    function startJerseySales() {
+      setInterval(() => {
+        salesCount += Math.floor(Math.random() * 47) + 3;
+        document.getElementById('jerseySales').textContent = salesCount.toLocaleString();
+      }, 200);
+    }
+
+    // STAT COUNTERS
+    function startCounters() {
+      const counters = document.querySelectorAll('.stat-value[data-count]');
+      counters.forEach(counter => {
+        const target = parseInt(counter.dataset.count);
+        const duration = 2000;
+        const start = performance.now();
+        function update(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          counter.textContent = Math.floor(eased * target).toLocaleString();
+          if (progress < 1) requestAnimationFrame(update);
+        }
+        setTimeout(() => requestAnimationFrame(update), 500);
+      });
+    }
+
+    // SCROLL REVEALS
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          // Animate grade bars
+          entry.target.querySelectorAll('.grade-fill').forEach(bar => {
+            setTimeout(() => { bar.style.width = bar.dataset.width + '%'; }, 300);
+          });
+        }
+      });
+    }, { threshold: 0.15 });
+    reveals.forEach(el => revealObserver.observe(el));
+
+    // JERSEY BUILDER
+    const jerseyNameInput = document.getElementById('jerseyNameInput');
+    const jerseyNumberInput = document.getElementById('jerseyNumberInput');
+    const jerseyNameDisplay = document.getElementById('jerseyName');
+    const jerseyNumberDisplay = document.getElementById('jerseyNumber');
+
+    jerseyNameInput.addEventListener('input', () => {
+      const val = jerseyNameInput.value.toUpperCase() || 'SAKS';
+      jerseyNameDisplay.textContent = val;
+    });
+    jerseyNumberInput.addEventListener('input', () => {
+      const val = jerseyNumberInput.value || '18';
+      jerseyNumberDisplay.textContent = val;
+    });
+
+    // Waitlist counter
+    let waitlist = 847293;
+    setInterval(() => {
+      waitlist += Math.floor(Math.random() * 12) + 1;
+      const el = document.getElementById('jerseyWaitlist');
+      if (el) el.textContent = waitlist.toLocaleString();
+    }, 3000);
+
+    // ADD TO CART
+    function addToCart(item) {
+      const status = item.querySelector('.shop-status');
+      if (status.classList.contains('sold-out')) {
+        item.style.animation = 'shake 0.4s ease-out';
+        setTimeout(() => item.style.animation = '', 400);
+        // Show a floating message
+        const msg = document.createElement('div');
+        msg.textContent = 'SOLD OUT — Join the waitlist of 2.3 million fans';
+        msg.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--bills-red);color:white;padding:1rem 2rem;border-radius:8px;font-size:0.85rem;font-weight:600;z-index:99999;animation:fadeUp 0.3s ease-out;font-family:Oswald,sans-serif;letter-spacing:0.05em;';
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 2500);
+      } else {
+        launchConfetti();
+        const msg = document.createElement('div');
+        msg.textContent = 'ADDED TO CART — You are customer #' + (Math.floor(Math.random() * 900000) + 100000).toLocaleString();
+        msg.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--green);color:white;padding:1rem 2rem;border-radius:8px;font-size:0.85rem;font-weight:600;z-index:99999;animation:fadeUp 0.3s ease-out;font-family:Oswald,sans-serif;letter-spacing:0.05em;';
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 2500);
+      }
+    }
+
+    // SHAKE animation
+    const shakeStyle = document.createElement('style');
+    shakeStyle.textContent = '@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }';
+    document.head.appendChild(shakeStyle);
+
+    // CONFETTI
+    function launchConfetti() {
+      const colors = ['#C60C30', '#00338D', '#FFD700', '#FFFFFF'];
+      for (let i = 0; i < 60; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.top = '-10px';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        piece.style.width = (Math.random() * 8 + 4) + 'px';
+        piece.style.height = (Math.random() * 8 + 4) + 'px';
+        document.body.appendChild(piece);
+        const duration = Math.random() * 2 + 1.5;
+        piece.animate([
+          { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+          { transform: `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+        ], { duration: duration * 1000, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }).onfinish = () => piece.remove();
+      }
+    }
+
+    // KONAMI CODE EASTER EGG
+    const konamiCode = [38,38,40,40,37,39,37,39,66,65];
+    let konamiIndex = 0;
+    document.addEventListener('keydown', (e) => {
+      if (e.keyCode === konamiCode[konamiIndex]) {
+        konamiIndex++;
+        if (konamiIndex === konamiCode.length) {
+          document.body.classList.add('konami-active');
+          launchConfetti();
+          launchConfetti();
+          const msg = document.createElement('div');
+          msg.innerHTML = 'CHEAT CODE ACTIVATED<br><span style="font-size:0.8rem;opacity:0.8">Ilan Saks mode: UNLIMITED</span>';
+          msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--gold);color:var(--bg);padding:2rem 3rem;border-radius:12px;font-family:Oswald,sans-serif;font-size:1.5rem;font-weight:700;text-align:center;z-index:99999;text-transform:uppercase;letter-spacing:0.1em;';
+          document.body.appendChild(msg);
+          setTimeout(() => msg.remove(), 3000);
+          konamiIndex = 0;
+        }
+      } else {
+        konamiIndex = 0;
+      }
+    });
+
+    // EASTER EGG: Click hero title 5 times
+    let heroClicks = 0;
+    document.querySelector('.hero-title')?.addEventListener('click', () => {
+      heroClicks++;
+      if (heroClicks === 5) {
+        const audio = new Audio();
+        launchConfetti();
+        const msg = document.createElement('div');
+        msg.innerHTML = '&#127944; YOU FOUND THE SECRET &#127944;<br><span style="font-size:0.85rem;opacity:0.8">Ilan\'s actual Wonderlic score: still 50/50</span>';
+        msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bills-blue);color:white;padding:2rem 3rem;border-radius:12px;font-family:Oswald,sans-serif;font-size:1.3rem;font-weight:700;text-align:center;z-index:99999;text-transform:uppercase;letter-spacing:0.1em;';
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 3000);
+        heroClicks = 0;
+      }
+    });
+
+    // CONSOLE EASTER EGG
+    console.log('%c BUFFALO BILLS OFFICIAL WEBSITE ', 'background: #00338D; color: white; font-size: 16px; font-weight: bold; padding: 10px;');
+    console.log('%c WARNING: This page contains dangerously high levels of Ilan Saks content. ', 'background: #C60C30; color: white; font-size: 12px; padding: 5px;');
+    console.log('%c Fun fact: Ilan once debugged a production outage while throwing a 50-yard spiral. Simultaneously. ', 'color: #888; font-size: 11px;');
+    console.log('%c If you\'re a recruiter reading this source code, Ilan is NOT available. He\'s busy winning Super Bowls. ', 'color: #ffd700; font-size: 11px;');
+  </script>
+</body>
+</html>
