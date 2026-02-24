@@ -147,6 +147,13 @@ h1,h2,h3,h4,h5,h6 {
   transform: scale(1.05);
   box-shadow: var(--shadow-lg);
 }
+@media (max-width: 360px) {
+  .splash-title { font-size: var(--text-h4); }
+  .splash-sub { font-size: var(--text-xs); margin-bottom: var(--space-6); }
+  .splash-btn { font-size: var(--text-base); padding: var(--space-3) var(--space-8); }
+  .splash-shield { width: 80px; height: 100px; margin-bottom: var(--space-6); }
+  .splash-breaking { font-size: var(--text-base); margin-bottom: var(--space-4); }
+}
 
 /* ===== TICKER BAR ===== */
 .ticker {
@@ -935,7 +942,7 @@ h1,h2,h3,h4,h5,h6 {
 <body>
 
 <!-- SPLASH SCREEN -->
-<div id="splash">
+<div id="splash" onclick="closeSplash()">
   <div class="splash-breaking">Breaking News</div>
   <div class="splash-shield">
     <svg viewBox="0 0 120 150">
